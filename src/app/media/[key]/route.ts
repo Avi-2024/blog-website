@@ -1,0 +1,2 @@
+import {readFile} from 'node:fs/promises';import path from 'node:path';
+export async function GET(_r:Request,{params}:{params:Promise<{key:string}>}){const {key}=await params;if(!/^[a-f0-9-]{36}\.webp$/.test(key))return new Response(null,{status:404});try{return new Response(await readFile(path.join(/*turbopackIgnore: true*/process.env.CMS_MEDIA_DIR||path.join(process.cwd(),'.data/media'),key)),{headers:{'Content-Type':'image/webp','Cache-Control':'public,max-age=31536000,immutable','X-Content-Type-Options':'nosniff'}});}catch{return new Response(null,{status:404});}}
