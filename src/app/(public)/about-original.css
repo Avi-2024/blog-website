@@ -1,0 +1,331 @@
+.nexilo-about {
+    width: 100%;
+    padding: 50px 20px;
+    background: #fafafa;
+    box-sizing: border-box;
+  }
+
+  .nexilo-container {
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  /* TOP LABEL */
+  .nexilo-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: "Poppins", sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #555;
+    margin-bottom: 18px;
+  }
+
+  .nexilo-label span {
+    width: 32px;
+    height: 1px;
+    background: #222;
+    display: inline-block;
+  }
+
+  /* MAIN HEADING */
+  .nexilo-main-heading {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 58px;
+    line-height: 1.05;
+    font-weight: 700;
+    color: #111;
+    max-width: 850px;
+    margin: 0 0 55px;
+  }
+
+  .nexilo-main-heading em {
+    font-weight: 400;
+  }
+
+  /* MISSION */
+  .nexilo-mission {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: 70px;
+    padding: 55px 0;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    align-items: center;
+  }
+
+  .nexilo-mission-title {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 40px;
+    line-height: 1.1;
+    color: #111;
+    margin: 0;
+  }
+
+  .nexilo-mission-content {
+    position: relative;
+    padding-left: 35px;
+  }
+
+  .nexilo-mission-content::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 5px;
+    width: 3px;
+    height: 85px;
+    background: #111;
+  }
+
+  .nexilo-mission-content p {
+    font-family: "Poppins", sans-serif;
+    font-size: 16px;
+    line-height: 1.9;
+    color: #555;
+    margin: 0 0 18px;
+  }
+
+  .nexilo-mission-content p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* APPROACH */
+  .nexilo-approach {
+    padding: 90px 0 20px;
+  }
+
+  .nexilo-section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 30px;
+    margin-bottom: 45px;
+  }
+
+  .nexilo-section-heading h3 {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 42px;
+    line-height: 1.1;
+    color: #111;
+    margin: 0;
+  }
+
+  .nexilo-section-heading p {
+    max-width: 430px;
+    font-family: "Poppins", sans-serif;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #777;
+    margin: 0;
+  }
+
+  /* CARDS */
+  .nexilo-approach-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+  }
+
+  .nexilo-card {
+    min-height: 250px;
+    padding: 25px 22px;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.35s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .nexilo-card::after {
+    content: "";
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: #f1f1f1;
+    right: -35px;
+    bottom: -35px;
+    transition: all 0.35s ease;
+  }
+
+  .nexilo-card:hover {
+    transform: translateY(-8px);
+    border-color: #222;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.08);
+  }
+
+  .nexilo-card:hover::after {
+    transform: scale(1.5);
+  }
+
+  .nexilo-number {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 24px;
+    color: #999;
+    position: relative;
+    z-index: 2;
+  }
+
+  .nexilo-card h4 {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 24px;
+    color: #111;
+    margin: 0 0 12px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .nexilo-card p {
+    font-family: "Poppins", sans-serif;
+    font-size: 13px;
+    line-height: 1.7;
+    color: #666;
+    margin: 0;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* COMMITMENT */
+  .nexilo-commitment {
+    padding: 55px;
+    color: black;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .nexilo-commitment::before {
+    content: "N";
+    position: absolute;
+    right: 20px;
+    top: -55px;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 280px;
+    line-height: 1;
+    color: rgba(255,255,255,0.035);
+  }
+
+  .nexilo-commitment-inner {
+    position: relative;
+    z-index: 2;
+    max-width: 850px;
+  }
+
+  .nexilo-commitment-label {
+    font-family: "Poppins", sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.55;
+    margin-bottom: 18px;
+  }
+
+  .nexilo-commitment h3 {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 44px;
+    line-height: 1.1;
+    margin: 0 0 25px;
+    font-weight: 700;
+  }
+
+  .nexilo-commitment p {
+    font-family: "Poppins", sans-serif;
+    font-size: 15px;
+    line-height: 1.9;
+    color: black;
+    margin: 0 0 8px;
+  }
+
+  .nexilo-commitment p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* TABLET */
+  @media (max-width: 900px) {
+    .nexilo-main-heading {
+      font-size: 48px;
+    }
+
+    .nexilo-mission {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+
+    .nexilo-approach-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .nexilo-section-heading {
+      display: block;
+    }
+
+    .nexilo-section-heading p {
+      margin-top: 15px;
+    }
+  }
+
+  /* MOBILE */
+  @media (max-width: 600px) {
+    .nexilo-about {
+      padding: 55px 16px;
+    }
+
+    .nexilo-main-heading {
+      font-size: 38px;
+      margin-bottom: 40px;
+    }
+
+    .nexilo-mission {
+      padding: 40px 0;
+    }
+
+    .nexilo-mission-title {
+      font-size: 32px;
+    }
+
+    .nexilo-mission-content {
+      padding-left: 22px;
+    }
+
+    .nexilo-mission-content p {
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .nexilo-approach {
+      padding-top: 60px;
+    }
+
+    .nexilo-section-heading h3 {
+      font-size: 34px;
+    }
+
+    .nexilo-approach-grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .nexilo-card {
+      min-height: 190px;
+    }
+
+    .nexilo-commitment {
+      margin-top: 60px;
+      padding: 35px 25px;
+    }
+
+    .nexilo-commitment h3 {
+      font-size: 34px;
+    }
+
+    .nexilo-commitment p {
+      font-size: 14px;
+      line-height: 1.8;
+    }
+  }

@@ -1,0 +1,2 @@
+'use client';
+export default function GlobalError({reset}:{error:Error&{digest?:string};reset:()=>void}){return <html lang="en"><body style={{fontFamily:'system-ui,sans-serif',padding:'40px',color:'#2f2e35',background:'#f1f5f9'}}><main><h1>Nexilo Labs is temporarily unavailable</h1><p>We could not load the article service. Please try again shortly.</p><button onClick={reset}>Try again</button></main></body></html>;}

@@ -1,0 +1,4 @@
+import 'server-only';import {cache} from 'react';import {query} from './cms/db';import {SITE_DESCRIPTION,NAV_ITEMS} from './site';import type {WPSEO} from './content';
+export type CMSSettings={announcement:string;footerText:string;nav:{label:string;href:string}[];homeSeo:WPSEO;widgets:{popular:number[];mustRead:number;missed:number[];showMissed:boolean}};
+const defaults:CMSSettings={announcement:'Get Our Best Posts Delivered to Your Inbox.',footerText:'Nexilo Labs publishes practical explainers on AI tools, technology, education, careers and digital skills.',nav:[...NAV_ITEMS],homeSeo:{description:SITE_DESCRIPTION},widgets:{popular:[],mustRead:0,missed:[],showMissed:false}};
+export const cmsSettings=cache(async()=>{const r=await query<{document:Partial<CMSSettings>}>('SELECT document FROM cms_settings WHERE id=1');return {...defaults,...r.rows[0]?.document,widgets:{...defaults.widgets,...r.rows[0]?.document?.widgets}};});

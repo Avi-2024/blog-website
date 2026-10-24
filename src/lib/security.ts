@@ -1,0 +1,16 @@
+import { createHmac, timingSafeEqual, randomUUID } from 'node:crypto';
+export function secret(name:string):string { const value=process.env[name]; if(!value||value.length<32)throw new Error(`${name} must contain at least 32 characters`);return value; }
+export function mac(value:string,key:string):string{return createHmac('sha256',key).update(value).digest('hex');}
+export function equal(a:string,b:string):boolean {const aa=Buffer.from(a),bb=Buffer.from(b);return aa.length===bb.length&&timingSafeEqual(aa,bb);}
+export function verifyRequest(raw:string,headers:Headers,key:string,now=Date.now()):{nonce:string} {
+ const timestamp=headers.get('x-nexilo-timestamp')||'',nonce=headers.get('x-nexilo-nonce')||'',signature=headers.get('x-nexilo-signature')||'';
+ if(!/^\d{10}$/.test(timestamp)||Math.abs(now/1000-Number(timestamp))>300||! /^[a-zA-Z0-9-]{16,80}$/.test(nonce)||! /^[a-f0-9]{64}$/.test(signature)||!equal(signature,mac(`${timestamp}.${nonce}.${raw}`,key)))throw new Error('Invalid signature');
+ return {nonce};
+}
+export function signedHeaders(raw:string,key:string){const timestamp=String(Math.floor(Date.now()/1000)),nonce=randomUUID();return {'content-type':'application/json','x-nexilo-timestamp':timestamp,'x-nexilo-nonce':nonce,'x-nexilo-signature':mac(`${timestamp}.${nonce}.${raw}`,key)};}
+export function localPath(path:unknown):path is string {if(typeof path!=='string'||path.length>1024||!path.startsWith('/')||path.startsWith('//')||/[\\\x00-\x20?#]/.test(path))return false;try {const decoded=decodeURIComponent(path);return !decoded.startsWith('//')&&!/[\\\x00-\x20]/.test(decoded)&&!decoded.split('/').includes('..');}catch{return false;}}
+export type PublishEvent={id:string;type:'content.changed';postId:number;paths:string[];occurredAt:string};
+export function parseEvent(raw:string):PublishEvent {const e=JSON.parse(raw);if(!e||! /^[a-zA-Z0-9-]{16,80}$/.test(e.id)||e.type!=='content.changed'||!Number.isSafeInteger(e.postId)||e.postId<0||!Array.isArray(e.paths)||e.paths.length>100||!e.paths.every(localPath)||!Number.isFinite(Date.parse(e.occurredAt)))throw new Error('Invalid event');return e;}
+export async function readLimited(req:Request,limit=32768){if(Number(req.headers.get('content-length'))>limit)throw new Error('Request too large');const reader=req.body?.getReader();if(!reader)return '';let size=0;const chunks:Uint8Array[]=[];while(true){const {value,done}=await reader.read();if(done)break;size+=value.length;if(size>limit){await reader.cancel();throw new Error('Request too large');}chunks.push(value);}return Buffer.concat(chunks).toString('utf8');}
+export type PreviewClaims={postId:number;userId:number;exp:number;nonce:string};
+export function previewToken(token:string,key:string):PreviewClaims {const [payload,sig,...rest]=token.split('.');if(rest.length||!payload||!sig||!equal(mac(payload,key),sig))throw new Error('Invalid preview');const c=JSON.parse(Buffer.from(payload,'base64url').toString());if(!Number.isSafeInteger(c.postId)||c.postId<1||!Number.isSafeInteger(c.userId)||c.userId<1||typeof c.exp!=='number'||c.exp<Date.now()/1000||c.exp>Date.now()/1000+900||! /^[a-zA-Z0-9-]{16,80}$/.test(c.nonce))throw new Error('Expired preview');return c;}
