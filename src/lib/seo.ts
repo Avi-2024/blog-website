@@ -1,6 +1,5 @@
 import {getCategory,getTags,getUser} from './content';
 import {cmsSettings} from './cms-settings';
-import {isReadOnlyPreview} from './preview-mode';
 import type { Metadata } from 'next';
 import type { WPPost,WPPage,WPSEO,WPCategory } from './content';
 import { stripHtml } from './editorial';
@@ -20,7 +19,7 @@ export function postMetadata(post:WPPost):Metadata{const base=common(post.nexilo
 export function pageMetadata(page:WPPage):Metadata{return common(page.nexilo_seo,page.title.rendered,SITE_URL+new URL(page.link).pathname);}
 export const homeMetadata:Metadata={title:{absolute:'ToolValueLab | AI Tools, SaaS Reviews & Business Software'},description:SITE_DESCRIPTION,alternates:{canonical:SITE_URL+'/'},openGraph:{title:'ToolValueLab | AI Tools, SaaS Reviews & Business Software',description:SITE_DESCRIPTION,url:SITE_URL+'/',type:'website'}};
 
-export async function homepageMetadata():Promise<Metadata>{if(isReadOnlyPreview())return {...homeMetadata,robots:{index:false,follow:false}};const settings=await cmsSettings();return settings?common(settings.homeSeo,SITE_NAME,SITE_URL+'/',SITE_DESCRIPTION):homeMetadata;}
+export async function homepageMetadata():Promise<Metadata>{const settings=await cmsSettings();return settings?common(settings.homeSeo,SITE_NAME,SITE_URL+'/',SITE_DESCRIPTION):homeMetadata;}
 
 export async function archiveMetadata(kind:'category'|'tag'|'author',slug:string,page=1):Promise<Metadata>{
  const record=kind==='category'?await getCategory(slug):kind==='tag'?(await getTags()).find(t=>decodeURIComponent(t.slug)===decodeURIComponent(slug)):await getUser(slug);

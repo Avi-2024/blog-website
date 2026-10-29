@@ -2,14 +2,9 @@ import {homepageMetadata} from '@/lib/seo';
 import {redirect,permanentRedirect,notFound} from 'next/navigation';
 import {getAllPosts,getPages} from '@/lib/content';
 import {LatestFeed} from '@/components/LatestFeed';
-import {PreviewLanding} from '@/components/PreviewLanding';
-import {isReadOnlyPreview} from '@/lib/preview-mode';
 
 export const generateMetadata=homepageMetadata;
 export default async function Home({searchParams}:{searchParams:Promise<{s?:string;p?:string;page_id?:string}>}){
-  // No production DB is deliberately not replaced with ephemeral storage on Vercel.
-  // Instead render a transparently labelled, read-only design-only preview.
-  if(isReadOnlyPreview())return <PreviewLanding/>;
   const {s,p,page_id}=await searchParams;
   if(s)redirect(`/search/?s=${encodeURIComponent(s.slice(0,100))}`);
   if(p||page_id){
