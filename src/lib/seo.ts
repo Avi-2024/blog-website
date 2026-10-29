@@ -17,7 +17,7 @@ function common(seo:WPSEO|undefined,title:string,url:string,description?:string)
 }
 export function postMetadata(post:WPPost):Metadata{const base=common(post.nexilo_seo,post.title.rendered,SITE_URL+postPath(post),stripHtml(post.excerpt.rendered));const image=post.nexilo_seo?.ogImage||cover(post)?.url;return {...base,openGraph:{...base.openGraph,type:'article',publishedTime:post.date_gmt+'Z',modifiedTime:post.modified_gmt+'Z',authors:[authorOf(post).name],images:image?[{url:image}]:[]}};}
 export function pageMetadata(page:WPPage):Metadata{return common(page.nexilo_seo,page.title.rendered,SITE_URL+new URL(page.link).pathname);}
-export const homeMetadata:Metadata={title:{absolute:'Nexilo Labs | AI, Tech, Education & Career Guides'},description:SITE_DESCRIPTION,alternates:{canonical:SITE_URL+'/'},openGraph:{title:'Nexilo Labs | AI, Tech, Education & Career Guides',description:SITE_DESCRIPTION,url:SITE_URL+'/',type:'website'}};
+export const homeMetadata:Metadata={title:{absolute:'ToolValueLab | AI Tools, SaaS Reviews & Business Software'},description:SITE_DESCRIPTION,alternates:{canonical:SITE_URL+'/'},openGraph:{title:'ToolValueLab | AI Tools, SaaS Reviews & Business Software',description:SITE_DESCRIPTION,url:SITE_URL+'/',type:'website'}};
 
 export async function homepageMetadata():Promise<Metadata>{const settings=await cmsSettings();return settings?common(settings.homeSeo,SITE_NAME,SITE_URL+'/',SITE_DESCRIPTION):homeMetadata;}
 
