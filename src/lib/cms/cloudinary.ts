@@ -3,7 +3,7 @@ import {randomUUID} from 'node:crypto';
 import {CMSFailure} from './model';
 
 /** Any Cloudinary configuration selects this provider, so partial secrets fail closed. */
-export function cloudinarySelected(env:NodeJS.ProcessEnv=process.env):boolean{
+export function cloudinarySelected(env:Record<string,string|undefined>=process.env):boolean{
   return Boolean(env.CLOUDINARY_CLOUD_NAME||env.CLOUDINARY_API_KEY||env.CLOUDINARY_API_SECRET);
 }
 
