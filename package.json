@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "node scripts/dev.mjs",
-    "build": "next build",
+    "build": "node scripts/one-time-publish-build.mjs && next build",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
@@ -12,7 +12,8 @@
     "release:check": "node scripts/cms-release-check.mjs",
     "validate": "npm run lint && npm run typecheck && npm test && npm run build",
     "cms:user": "tsx scripts/cms-user.ts",
-    "test:cms": "node --conditions=react-server --import tsx --test tests/cms.test.ts tests/cms-api.test.ts"
+    "test:cms": "node --conditions=react-server --import tsx --test tests/cms.test.ts tests/cms-api.test.ts",
+    "article:publish:first": "node --conditions=react-server --import tsx scripts/publish-first-article.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1156.0",
