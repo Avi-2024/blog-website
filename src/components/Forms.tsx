@@ -7,7 +7,7 @@ export function EditorialForm({kind,configured}:{kind:'contact'|'newsletter';con
  <label>Email address<input name="email" type="email" required maxLength={254} autoComplete="email"/></label>
  {kind==='contact'&&<label>Message<textarea name="message" required minLength={10} maxLength={5000} rows={6}/></label>}
  <div className="honeypot" aria-hidden="true"><label>Website<input name="website" tabIndex={-1} autoComplete="off"/></label></div>
- <label className="consent"><input name="consent" type="checkbox" required/> {kind==='newsletter'?'I agree to receive Nexilo Labs email updates.':'I agree that Nexilo Labs may use these details to respond to my inquiry.'}</label>
+ <label className="consent"><input name="consent" type="checkbox" required/> {kind==='newsletter'?'I agree to receive ToolValueLab email updates.':'I agree that ToolValueLab may use these details to respond to my inquiry.'}</label>
  <p><Link href="/privacy-policy/">Privacy policy</Link></p>
  {!configured&&<p role="status">{kind==='contact'?'Message delivery':'Email subscriptions'} is currently unavailable. Please check back later.</p>}
  <button className="pill" disabled={busy||!configured}>{busy?'Sending…':kind==='contact'?'Send message':'Subscribe'}</button><p role="status" aria-live="polite">{status}</p></form>;
