@@ -25,3 +25,10 @@
 /* Homepage pagination colors measured from Elementor template 2880. */
 .pagination[data-variant=home] a{background:#d7e4ee}.pagination[data-variant=home] a[aria-current=page],.pagination[data-variant=home] a:hover{background:#ff4568;color:#fff}
 .menu-toggle{align-items:center;justify-content:center;min-width:44px;min-height:44px}.menu-toggle svg{display:block}
+
+/* ToolValueLab wordmark — avoids showing the legacy publication logo. */
+.brand{display:inline-flex;align-items:center;text-decoration:none;white-space:nowrap}
+.brand-wordmark{display:inline-block;font-family:inherit;font-size:clamp(23px,2.3vw,30px);font-weight:800;line-height:1.2;letter-spacing:-1.3px;color:#172b46;white-space:nowrap}
+.brand-wordmark>span{color:#ef2458}
+.site-footer .brand-wordmark{font-size:29px}
+@media(max-width:600px){.brand-wordmark{font-size:24px;letter-spacing:-1px}}
