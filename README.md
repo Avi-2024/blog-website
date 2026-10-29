@@ -100,3 +100,15 @@ Preview builds use the **real** CMS and PostgreSQL integration, not a fake sampl
 5. With a **persistent PostgreSQL database**, create the initial owner account, log in to `/admin/`, upload a sample image and verify its HTTPS Cloudinary URL renders in a published draft. The upload endpoint verifies the admin session, checks request origin and image type, limits input to 10 MB/40 MP, resizes to max 2400 px and stores WebP.
 
 The server uploads through Cloudinary's authenticated API using HTTP Basic Auth; credentials never reach the browser. The returned `secure_url` is saved in the CMS media table. Local development keeps its existing local media fallback if Cloudinary is not set. Existing S3 media remains supported as a fallback provider. Media deletion/reconciliation and storage quota monitoring need additional lifecycle work before large-scale use. Cloudinary free plan quotas apply and may change.
+
+## SEO indexing release gate (ToolValueLab)
+
+The site uses one fail-closed SEO switch through `src/lib/indexing.ts`. `STAGING_NOINDEX=true`, missing values, or `VERCEL_ENV=preview` block crawling and add `noindex` headers and metadata. On the real production project, after content/trust pages and domain configuration are ready, set **`STAGING_NOINDEX=false` in Vercel Production** and deploy again. Never use this setting for a preview environment. Keep user-specific CMS draft `/preview/`, admin `/admin/` and API routes noindexed regardless.
+
+Vercel domain redirects must agree with the canonical origin: **`toolvaluelab.com` serves HTTP 200; `www.toolvaluelab.com` permanently redirects to the apex (308)**. Do not enable public indexing while the opposite redirect is configured. The Vercel alias is not the desired Search Console property. After launch check the *live responses*, not just GitHub code:
+
+- `https://toolvaluelab.com/robots.txt` allows public paths and references `https://toolvaluelab.com/sitemap.xml`.
+- `https://toolvaluelab.com/sitemap.xml` lists only published indexable CMS URLs.
+- The homepage and first published article both return 200, have apex canonical URLs, no `noindex` meta tags and **no `X-Robots-Tag: noindex`**.
+- Private admin, API and preview routes remain disallowed/noindexed, and the Vercel preview environment remains blocked.
+- Run Google Search Console live URL inspection on **the apex URL**, then request indexing. Crawling/indexing is Google-controlled and may not happen immediately.
