@@ -1,23 +1,19 @@
-# Nexilo Labs — Next.js and custom CMS
+# ToolValueLab — AI & Business Software Publication
 
-Architecture per the owner's latest instruction: **Next.js public website with an in-house CMS at `/admin/`; WordPress is removed from runtime.** No live hosting, production site, or DNS has been modified.
+A Next.js 16 / React 19 editorial website with an integrated private CMS at `/admin/`. This repository is for **toolvaluelab.com**; it is a separate publication from Nexilo Labs. Existing internal database/HTTP identifiers retain their older names for compatibility.
 
-The UI keeps the audited Nexilo Labs layout and styling. CMS content lives in a PostgreSQL database, never in source arrays/Markdown imports. Local development uses persistent PGlite files; production requires an external PostgreSQL database. Media uploads are resized/re-encoded and saved to S3-compatible storage in production.
+## Editorial focus
 
-## Editorial features
+- AI tools and hands-on tutorials
+- Software reviews and feature/price comparisons
+- CRM, automation, business applications and SaaS
+- Cloud services and hosting
 
-- Owner, editor and author accounts; secure scrypt password hashes; eight-hour HttpOnly session cookies; account creation for the team.
-- Visual editor supports article title as H1, H2/H3/H4, bold/italic, lists, links, tables, alignment, and images.
-- Articles and pages with saved drafts, debounced autosave, 100 revisions, authenticated preview, publish/update, future scheduling, unpublish, recoverable trash and permanent delete from trash.
-- Draft and published content are stored separately: autosave does not silently change the public article. Publish/Update explicitly changes the public copy.
-- Featured media with alt text, category/tag assignment, author archives, SEO title/description/canonical/social fields, and noindex control.
-- Website announcement, footer introduction, navigation and homepage SEO come from CMS settings. Pages (About, legal, contact, etc.) are edited in the Pages panel when created/imported.
-- Public article pages, homepage, category/tag/author archives, search, RSS and sitemap read only `published` rows. Publishing invalidates Next.js cache tags and paths; pages are rendered dynamically so changes do not need a build or deployment.
-- A bearer-protected `/api/cron/publish/` activates scheduled articles. `vercel.json` requests a once-a-minute job; production hosting must permit that schedule. Public requests also reconcile due schedule rows in case a cron tick was missed.
+Prioritize helpful, original, expert-reviewed writing. Use first-hand screenshots and test conditions where possible. Clearly disclose affiliate relationships and separate advertising from editorial recommendations. Do not publish unverified prices, claims or fabricated experience.
 
-## Local setup
+## Run locally
 
-Requires Node 22.13+ and npm.
+Node 22.13+ is required.
 
 ```bash
 npm ci
@@ -25,35 +21,70 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Create the initial owner once. This prompts for the password without echoing it; finish with Enter, and send EOF (Ctrl-D) if prompted. Do not put a real password into command arguments or source control.
+The initial owner is created once (the CLI prompts for a password; do not put it in command arguments or commit credentials):
 
 ```bash
-npm run cms:user -- avi@example.com "Avi Tamrakar" avi-tamrakar owner
+npm run cms:user -- editor@your-domain.example "Editor Name" toolvaluelab-editor owner
 ```
 
-Then open `http://localhost:3000/admin/`. No default credentials, demo account, imported blog posts or starter articles are included. Create your categories/tags and write your articles there. Local data is under `.data/cms` and images under `.data/media`; back these up if you keep local content.
+Open `http://localhost:3000/admin/`. For local development, PGlite files and media live under `.data/` (not suitable for serverless production). The editor provides drafts, autosave, 100 revisions, private preview, scheduling, categorization, reusable media and publish/unpublish. No starter articles are included. The four primary topic categories are created on database initialization.
 
-## Production is not ready yet
+## Production configuration (must be completed before launch)
 
-Before using a public deployment, provision and configure:
+Set these server-side variables on the host (never add credentials to git):
 
-- A durable PostgreSQL database with backups and restore testing (`DATABASE_URL`). Do not use local PGlite storage on serverless production.
-- A private owner account and the exact HTTPS website origin (`CMS_ADMIN_ORIGIN`, `NEXT_PUBLIC_SITE_URL`). Do not enable `CMS_LOCAL_MODE` in production.
-- An S3-compatible image bucket and HTTPS public media URL, with server-only credentials.
-- A random 32+ character cron secret; confirm the host actually runs the configured one-minute cron.
-- Contact/newsletter delivery integrations (the existing forms fail closed when not configured).
-- Hosted acceptance tests for auth, real DB/media, editor, draft privacy, preview, search/indexing, sitemap, mobile layout, cron/retries, backups and real propagation latency.
-- A content/URL decision before cutover. No legacy blog records or article export are included in this fresh-start repository. The existing live site remains untouched; production cutover still needs a review of pages, URLs, and redirects.
+```dotenv
+NEXT_PUBLIC_SITE_URL=https://toolvaluelab.com
+CMS_ADMIN_ORIGIN=https://toolvaluelab.com
+STAGING_NOINDEX=false
+DATABASE_URL=postgresql://... (private)
+CRON_SECRET=<random 32+ character secret>
+S3_BUCKET=<your private media bucket>
+S3_REGION=<your provider region>
+S3_ENDPOINT=<your S3-compatible service endpoint>
+AWS_ACCESS_KEY_ID=<server-only access key>
+AWS_SECRET_ACCESS_KEY=<server-only secret>
+MEDIA_PUBLIC_URL=https://<your public media domain>
+CMS_LOCAL_MODE=false
+```
 
-`npm run release:check` verifies required environment values; a pass alone is not launch approval. Do not mark production ready until hosted tests and content comparison pass.
+Add an owner account and test real production PostgreSQL with durable backups and restore. Verify S3 uploads, the cron authorization, secure HTTPS, draft access controls, front-end responsiveness, user-facing forms and publish-to-public propagation before launch. Configure CONTACT/NEWSLETTER providers if those forms will be available. Public forms require durable Redis. `npm run release:check` validates some environment requirements, but does **not** verify the live deployment.
 
-## Checks
+### DNS and canonical origin
+
+The domain may remain registered with BigRock while DNS points to your chosen hosting. Configure apex `toolvaluelab.com` plus `www` and enforce a single canonical hostname via your hosting provider. Preserve existing MX/TXT records during any nameserver changes. Domain transfer to GoDaddy is a separate optional registrar operation.
+
+### Indexing safeguard
+
+Production stays **noindex** until `STAGING_NOINDEX=false` is set intentionally. On staging keep `STAGING_NOINDEX=true`. After cutover verify:
+
+- `/` returns 200 with no `X-Robots-Tag: noindex`
+- `/robots.txt` allows public crawling
+- `/sitemap.xml` includes only publicly published indexable URLs for toolvaluelab.com
+- post canonical URLs, metadata and JSON-LD reference toolvaluelab.com
+- `/admin/`, `/preview/` and API routes are protected/noindexed
+- submit the new domain to Google Search Console, verify URL Inspection and monitor indexing
+
+### Scheduled publishing
+
+`vercel.json` uses a daily `03:00 UTC` cron for compatibility with Vercel Hobby. The app also publishes due posts when public content is requested. **This is not precise scheduling**: exact-time publication requires an appropriately frequent authorized scheduler or a supported paid hosting plan.
+
+### Advertising
+
+The code deliberately does **not** turn on ads or claim approval. Configure `ADSENSE_PUBLISHER_ID=pub-1234567890123456` only after receiving your real ID; `/ads.txt` will then serve the authorized seller declaration. The example ID is not valid for your site. Before introducing AdSense scripts/slots, get site approval, publish complete and accurate legal/trust pages, and implement applicable privacy/consent controls (including a Google-certified CMP when required). Do not overrun articles with ads or misrepresent affiliate partnerships.
+
+### Pre-launch content requirements
+
+Use the CMS to publish genuine About, Privacy Policy, Terms, Disclaimer, editorial standards and Contact information appropriate to the real business; links to CMS legal pages will 404 until they are created. Publish multiple substantial original articles and verify all visible footer links. No blog content should be fabricated as part of the deployment. 
+
+## Quality checks
 
 ```bash
 npm run lint
 npm run typecheck
 npm test
 npm run build
+npm run release:check
 ```
 
-Current automated tests exercise database transactions, password/session auth, role checks, draft privacy, publish/update, SEO data, autosave isolation, revisions, scheduled publication and retry, Unicode permalinks, redirects/unpublish, media sanitization, and API-origin checks. Their propagation measurements are local database timings, not production latency.
+GitHub Actions runs `npm run validate` on pushes/PRs. CI's embedded database is for testing only, not evidence that the production database, object storage, email integration, schedules, or DNS work. Merge only after checks pass and a hosted smoke test is performed.
