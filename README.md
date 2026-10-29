@@ -87,9 +87,9 @@ npm run release:check
 
 GitHub Actions runs `npm run validate` on pushes/PRs. CI's embedded database is for testing only, not evidence that the production database, object storage, email integration, schedules, or DNS work. Merge only after checks pass and a hosted smoke test is performed.
 
-## Database-free design preview (Vercel Preview only)
+## Preview deployments
 
-When `VERCEL_ENV=preview` and `DATABASE_URL` is absent, the public homepage renders a clearly labelled **read-only design preview** rather than crashing during CMS initialization. This mode does not publish, edit or serve real CMS articles; the admin page explains that storage is disconnected. It cannot be enabled on production. Vercel preview deployments are always `noindex`, independent of `STAGING_NOINDEX`. Configure a durable production PostgreSQL connection and object storage for complete website testing.
+Preview builds use the **real** CMS and PostgreSQL integration, not a fake sample landing page. Set `DATABASE_URL` for the Preview environment when testing the site and CMS. Without database configuration, CMS-backed pages will fail rather than silently displaying demo content. Preview remains `noindex` through its existing Next.js robots and response-header safeguards. Keep preview database credentials server-side and separate from production when possible.
 
 ## Cloudinary image storage (preferred, no S3 key required)
 
