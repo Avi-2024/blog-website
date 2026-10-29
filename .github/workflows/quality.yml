@@ -1,0 +1,23 @@
+name: ToolValueLab quality
+on:
+  push:
+    branches: [main, "feat/**"]
+  pull_request:
+    branches: [main]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CMS_LOCAL_MODE: "true"
+      STAGING_NOINDEX: "true"
+      NEXT_PUBLIC_SITE_URL: "http://localhost:3000"
+      CMS_ADMIN_ORIGIN: "http://cms.test"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run validate

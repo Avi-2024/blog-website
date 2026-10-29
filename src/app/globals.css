@@ -25,3 +25,45 @@
 /* Homepage pagination colors measured from Elementor template 2880. */
 .pagination[data-variant=home] a{background:#d7e4ee}.pagination[data-variant=home] a[aria-current=page],.pagination[data-variant=home] a:hover{background:#ff4568;color:#fff}
 .menu-toggle{align-items:center;justify-content:center;min-width:44px;min-height:44px}.menu-toggle svg{display:block}
+
+/* ToolValueLab wordmark — avoids showing the legacy publication logo. */
+.brand{display:inline-flex;align-items:center;text-decoration:none;white-space:nowrap}
+.brand-wordmark{display:inline-block;font-family:inherit;font-size:clamp(23px,2.3vw,30px);font-weight:800;line-height:1.2;letter-spacing:-1.3px;color:#172b46;white-space:nowrap}
+.brand-wordmark>span{color:#ef2458}
+.site-footer .brand-wordmark{font-size:29px}
+@media(max-width:600px){.brand-wordmark{font-size:24px;letter-spacing:-1px}}
+
+/* ToolValueLab editorial landing page. */
+.home-hero{padding:clamp(24px,4vw,48px);margin-bottom:28px;border:1px solid #e3e7f0;border-radius:22px;background:linear-gradient(135deg,#f4f7fc,#fff 70%)}
+.home-hero-eyebrow{font-size:12px;font-weight:800;letter-spacing:1.6px;color:#ef2458;margin:0 0 14px}
+.home-hero h1{font-size:clamp(32px,4vw,52px);line-height:1.14;letter-spacing:-1.5px;color:#172b46;max-width:660px;margin:0 0 16px}
+.home-hero>p:not(.home-hero-eyebrow){font-size:17px;line-height:1.65;color:#536177;max-width:630px;margin:0 0 22px}
+.home-topic-links{display:flex;flex-wrap:wrap;gap:10px}
+.home-topic-links a{padding:8px 13px;border:1px solid #d9e0ec;border-radius:100px;background:#fff;color:#172b46;font-size:13px;font-weight:650;text-decoration:none;transition:border-color .15s,background .15s}
+.home-topic-links a:hover,.home-topic-links a:focus-visible{border-color:#ef2458;background:#fff0f5}
+.home-section-heading{font-size:clamp(22px,2.5vw,30px);line-height:1.2;letter-spacing:-.6px;margin:30px 0 18px;color:#172b46}
+@media(max-width:600px){.home-hero{border-radius:15px;padding:24px 19px}.home-hero h1{letter-spacing:-.8px}.home-hero>p:not(.home-hero-eyebrow){font-size:15px}}
+
+/* Database-free Vercel Preview: intentionally labels the page and disables CMS links. */
+.preview-only-notice{background:#162b4c;color:white;padding:11px 20px;text-align:center;font-size:13px;font-weight:600}
+.preview-header-status{margin-left:auto;font-size:13px;color:#64748b;font-weight:600}
+.preview-only-footer{padding:30px 0;color:#64748b;font-size:14px}
+.visual-preview{padding-top:42px;padding-bottom:68px}
+.visual-preview-hero{border:1px solid #e0e6ef;background:linear-gradient(125deg,#f2f7ff,#fff 78%);border-radius:24px;padding:clamp(26px,5vw,64px);margin-bottom:44px}
+.visual-preview-eyebrow{font-size:12px;font-weight:800;letter-spacing:1.8px;color:#e61d59;margin-bottom:18px}
+.visual-preview-hero h1{font-size:clamp(36px,4.6vw,60px);line-height:1.1;letter-spacing:-2px;color:#142d49;max-width:770px}
+.visual-preview-hero>p:not(.visual-preview-eyebrow){font-size:clamp(16px,1.8vw,20px);line-height:1.6;color:#50617a;max-width:660px}
+.visual-preview-tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.visual-preview-tags span{background:white;border:1px solid #d7dfeb;border-radius:99px;padding:9px 14px;font-size:13px;font-weight:700}
+.visual-preview-heading{display:flex;align-items:end;justify-content:space-between;gap:15px;margin-bottom:24px}
+.visual-preview-heading p{font-size:12px;letter-spacing:1.4px;font-weight:800;color:#e61d59;margin:0 0 10px}
+.visual-preview-heading h2{margin-bottom:0}
+.visual-preview-heading>span{font-size:13px;color:#7d8798}
+.visual-preview-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+.visual-preview-card{background:white;border:1px solid #dde4ed;border-radius:18px;padding:25px;min-height:205px}
+.visual-preview-number{font-size:12px;font-weight:800;color:#e61d59}
+.visual-preview-card h3{font-size:21px;margin:16px 0 10px;color:#142d49}
+.visual-preview-card p{font-size:14px;line-height:1.6;color:#64748b;margin:0}
+.visual-preview-disclaimer{font-size:13px;color:#68788d;margin:28px 0 0}
+@media(max-width:850px){.visual-preview-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.visual-preview{padding-top:20px}.visual-preview-hero{border-radius:16px;padding:25px 20px}.visual-preview-hero h1{letter-spacing:-1px}.visual-preview-grid{grid-template-columns:1fr}.visual-preview-heading{align-items:start}.preview-header-status{font-size:11px}}
