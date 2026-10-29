@@ -39,16 +39,14 @@ CMS_ADMIN_ORIGIN=https://toolvaluelab.com
 STAGING_NOINDEX=false
 DATABASE_URL=postgresql://... (private)
 CRON_SECRET=<random 32+ character secret>
-S3_BUCKET=<your private media bucket>
-S3_REGION=<your provider region>
-S3_ENDPOINT=<your S3-compatible service endpoint>
-AWS_ACCESS_KEY_ID=<server-only access key>
-AWS_SECRET_ACCESS_KEY=<server-only secret>
-MEDIA_PUBLIC_URL=https://<your public media domain>
+# Cloudinary (preferred; all three required)
+CLOUDINARY_CLOUD_NAME=<your cloud name>
+CLOUDINARY_API_KEY=<server-only API key>
+CLOUDINARY_API_SECRET=<server-only API secret>
 CMS_LOCAL_MODE=false
 ```
 
-Add an owner account and test real production PostgreSQL with durable backups and restore. Verify S3 uploads, the cron authorization, secure HTTPS, draft access controls, front-end responsiveness, user-facing forms and publish-to-public propagation before launch. Configure CONTACT/NEWSLETTER providers if those forms will be available. Public forms require durable Redis. `npm run release:check` validates some environment requirements, but does **not** verify the live deployment.
+Add an owner account and test real production PostgreSQL with durable backups and restore. Verify Cloudinary image uploads, the cron authorization, secure HTTPS, draft access controls, front-end responsiveness, user-facing forms and publish-to-public propagation before launch. Configure CONTACT/NEWSLETTER providers if those forms will be available. Public forms require durable Redis. `npm run release:check` validates some environment requirements, but does **not** verify the live deployment.
 
 ### DNS and canonical origin
 
@@ -92,3 +90,13 @@ GitHub Actions runs `npm run validate` on pushes/PRs. CI's embedded database is 
 ## Database-free design preview (Vercel Preview only)
 
 When `VERCEL_ENV=preview` and `DATABASE_URL` is absent, the public homepage renders a clearly labelled **read-only design preview** rather than crashing during CMS initialization. This mode does not publish, edit or serve real CMS articles; the admin page explains that storage is disconnected. It cannot be enabled on production. Vercel preview deployments are always `noindex`, independent of `STAGING_NOINDEX`. Configure a durable production PostgreSQL connection and object storage for complete website testing.
+
+## Cloudinary image storage (preferred, no S3 key required)
+
+1. Create a Cloudinary account and obtain **Cloud name**, **API Key**, **API Secret** from the Cloudinary Console (Settings / API Keys).
+2. Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET` as server-only Vercel environment variables. Never commit or prefix them with `NEXT_PUBLIC_`.
+3. Remove any incomplete/unused S3 variables. Cloudinary takes precedence when any Cloudinary variable is set and fails closed if incomplete, rather than silently writing media to another provider.
+4. Redeploy after adding the keys so Next.js includes the Cloudinary CDN in its tightly scoped remote image patterns.
+5. With a **persistent PostgreSQL database**, create the initial owner account, log in to `/admin/`, upload a sample image and verify its HTTPS Cloudinary URL renders in a published draft. The upload endpoint verifies the admin session, checks request origin and image type, limits input to 10 MB/40 MP, resizes to max 2400 px and stores WebP.
+
+The server uploads through Cloudinary's authenticated API using HTTP Basic Auth; credentials never reach the browser. The returned `secure_url` is saved in the CMS media table. Local development keeps its existing local media fallback if Cloudinary is not set. Existing S3 media remains supported as a fallback provider. Media deletion/reconciliation and storage quota monitoring need additional lifecycle work before large-scale use. Cloudinary free plan quotas apply and may change.
