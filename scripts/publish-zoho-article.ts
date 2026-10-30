@@ -39,8 +39,8 @@ async function publish() {
    `SELECT id,slug FROM cms_terms WHERE kind='category' AND slug=ANY($1::text[])`,[doc.categorySlugs])).rows;
  if(cat.length!==new Set(doc.categorySlugs).size)throw new Error('Missing required categories');
  const author=(await query<User>(
-   `SELECT id,email,name,slug,role,description FROM cms_users WHERE NOT disabled AND role IN ('owner','editor') ORDER BY CASE WHEN role='owner' THEN 0 ELSE 1 END,id LIMIT 1`)).rows[0];
- if(!author)throw new Error('An active CMS owner or editor is required. Configure one with the existing cms:user command first');
+   `SELECT id,email,name,slug,role,description FROM cms_users WHERE NOT disabled ORDER BY CASE WHEN role='owner' THEN 0 WHEN role='editor' THEN 1 ELSE 2 END,id LIMIT 1`)).rows[0];
+ if(!author)throw new Error('An active CMS user is required. Configure one with the existing cms:user command first');
  const record={
    title:doc.title,slug:doc.slug,html:doc.html,excerpt:doc.excerpt,
    featuredImage:image,imageAlt:doc.imageAlt,categories:cat.map(x=>x.id),tags:[],
