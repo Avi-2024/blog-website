@@ -112,3 +112,16 @@ Vercel domain redirects must agree with the canonical origin: **`toolvaluelab.co
 - The homepage and first published article both return 200, have apex canonical URLs, no `noindex` meta tags and **no `X-Robots-Tag: noindex`**.
 - Private admin, API and preview routes remain disallowed/noindexed, and the Vercel preview environment remains blocked.
 - Run Google Search Console live URL inspection on **the apex URL**, then request indexing. Crawling/indexing is Google-controlled and may not happen immediately.
+
+## Publish the prepared Zoho Analytics news post
+
+The article source is `editorial/zoho-analytics-agentic-ai-2026.json`; its original illustrated feature image is `public/featured/zoho-analytics-agentic-ai-2026.svg`. These files being in GitHub does **not** publish them. Only a real CMS publish writes to Neon PostgreSQL.
+
+On an authorized workstation with Node 22+ and a trusted production database connection configured, run:
+
+```bash
+npm ci
+node --env-file=.env.production.local --conditions=react-server --import tsx scripts/publish-zoho-analytics-2026.ts
+```
+
+Keep `.env.production.local` private and untracked. It must contain `DATABASE_URL` and `NEXT_PUBLIC_SITE_URL=https://toolvaluelab.com`. Never paste the database password into GitHub, CLI arguments, logs or chat. The command validates the slug and featured image, checks for an existing post, uses the CMS's existing `createPost` / `editPost` functions, and refuses to overwrite an existing draft or post. It requires an existing, enabled CMS author. No build-time publisher hook, unauthenticated public import endpoint or automatic database writes are added. After the command reports `published`, inspect the canonical URL, the featured image and `/sitemap.xml`.
