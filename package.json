@@ -14,7 +14,7 @@
     "cms:user": "tsx scripts/cms-user.ts",
     "test:cms": "node --conditions=react-server --import tsx --test tests/cms.test.ts tests/cms-api.test.ts",
     "article:publish:first": "node --conditions=react-server --import tsx scripts/publish-first-article.ts",
-    "article:publish:zoho": "node --conditions=react-server --import tsx scripts/publish-zoho-article.ts"
+    "article:publish:zoho": "node --conditions=react-server --import tsx scripts/publish-zoho-analytics-2026.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1156.0",
