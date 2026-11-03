@@ -7,7 +7,7 @@ import { PostMeta } from './PostMeta';
 export function ArticleCard({post,priority=false}:{post:WPPost;priority?:boolean}) {
   const image = cover(post); const title = stripHtml(post.title.rendered);
   return <article className="article-card">
-    {image && <Link className="article-image" href={postPath(post)} aria-label={title}><Image src={image.url} alt={image.alt} width={640} height={427} priority={priority} sizes="(max-width:640px) 92vw, 320px" /></Link>}
+    {image && <Link className="article-image" href={postPath(post)} aria-label={title}><Image src={image.url} alt={image.alt} width={640} height={427} preload={priority} sizes="(max-width: 600px) calc(100vw - 48px), (max-width: 900px) 35vw, (max-width: 1280px) 30vw, 330px" /></Link>}
     <div className="article-summary">
       <div className="category-links">{categoriesOf(post).map(cat=><Link key={cat.id} href={`/category/${cat.slug}/`}>{stripHtml(cat.name)}</Link>)}</div>
       <h2><Link href={postPath(post)}>{title}</Link></h2>
