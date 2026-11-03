@@ -3,7 +3,7 @@ import {cmsSettings} from './cms-settings';
 import type { Metadata } from 'next';
 import type { WPPost,WPPage,WPSEO,WPCategory } from './content';
 import { stripHtml } from './editorial';
-import { SITE_NAME,SITE_URL,SITE_DESCRIPTION } from './site';
+import { SITE_NAME,SITE_URL,SITE_DESCRIPTION,CATEGORY_EDITORIAL } from './site';
 import {shouldBlockIndexing} from './indexing';
 import { cover,postPath,authorOf } from './content';
 // Metadata comes from the live custom CMS published document.
@@ -27,7 +27,8 @@ export async function archiveMetadata(kind:'category'|'tag'|'author',slug:string
  const path=`/${kind}/${slug}/${page>1?'page/'+page+'/':''}`;const suffix=page>1?' — Page '+page:'';if(!record)return {title:'Not found',robots:{index:false,follow:false}};const baseTitle=stripHtml(record.name);const title=baseTitle+suffix;
  if(kind==='author')return {title,robots:{index:false,follow:!shouldBlockIndexing()},alternates:{canonical:SITE_URL+path}};
  const seo=(record as WPCategory).nexilo_seo;
- const metadata=common(seo,title+' - '+SITE_NAME,SITE_URL+path);
+ const description=kind==='category'?CATEGORY_EDITORIAL[slug]?.description:undefined;
+ const metadata=common(seo,title+' - '+SITE_NAME,SITE_URL+path,description);
  if(page>1){metadata.title={absolute:stripHtml(seo?.title||baseTitle)+' — Page '+page};metadata.alternates={canonical:SITE_URL+path};}
  if(!record||(kind==='tag'&&!seo?.robots)||('count' in record&&!record.count))metadata.robots={index:false,follow:!shouldBlockIndexing()};
  return metadata;
