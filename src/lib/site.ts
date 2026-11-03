@@ -21,7 +21,7 @@ export const CATEGORY_EDITORIAL: Record<string,{description:string;intro:string}
   },
   'business-software': {
     description:'Business software guides covering CRM, automation, analytics and productivity tools for startups and small teams.',
-    intro:'Find software that suits your team's actual operations. We cover CRM selection, sales workflows, reporting, automation and useful technology updates with practical decision frameworks.'
+    intro:"Find software that suits your team's actual operations. We cover CRM selection, sales workflows, reporting, automation and useful technology updates with practical decision frameworks."
   },
   'cloud-hosting': {
     description:'Cloud hosting and deployment comparisons for websites and Next.js apps, including pricing, databases, cron jobs and operational trade-offs.',
