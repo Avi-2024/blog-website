@@ -1,8 +1,10 @@
 {
+  "site": "ToolValueLab",
+  "domain": "https://toolvaluelab.com",
+  "focus": "Strictly Foreign / Tier-1 Markets (US, UK, Europe, Australia), USD Benchmarks, SOC2/GDPR Compliance, In-Depth SaaS Comparisons",
   "cycle": 1,
   "automation_frequency": "daily",
   "total_cycle_days": 7,
-  "on_cycle_end": "Automatically research latest trending AI & software topics and generate Days 8-14 content batch",
   "posts": [
     {
       "day": 1,
