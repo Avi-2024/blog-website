@@ -2,6 +2,7 @@ import https from 'node:https';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { fileURLToPath } from 'node:url';
 
 const WP_HOST = 'nexilolabs.com';
 const WP_USER = 'wpusername9227';
@@ -53,10 +54,10 @@ async function getGoogleToken() {
   return data.access_token;
 }
 
-async function pingGoogleIndexing(url) {
+export async function pingGoogleIndexing(url) {
   try {
     const token = await getGoogleToken();
-    if (!token) return;
+    if (!token) return { status: 0, ok: false };
     const res = await fetch('https://indexing.googleapis.com/v3/urlNotifications:publish', {
       method: 'POST',
       headers: {
@@ -66,8 +67,10 @@ async function pingGoogleIndexing(url) {
       body: JSON.stringify({ url, type: 'URL_UPDATED' })
     });
     console.log(`[Google Indexing API] ${url} -> HTTP ${res.status}`);
+    return { status: res.status, ok: res.ok };
   } catch (e) {
     console.warn(`[Google Indexing API Warning] ${e.message}`);
+    return { status: 0, ok: false, error: e.message };
   }
 }
 
@@ -127,6 +130,102 @@ async function findExistingWpPost(slug) {
   return null;
 }
 
+async function findExistingWpMedia(slugBase) {
+  try {
+    const res = await wpRequest('GET', `/wp-json/wp/v2/media?slug=${encodeURIComponent(slugBase)}&per_page=5`);
+    const items = JSON.parse(res.body);
+    if (Array.isArray(items) && items.length > 0) {
+      return items[0].id;
+    }
+  } catch {
+    // ignore
+  }
+  return null;
+}
+
+function wpUploadBinary(filename, mimeType, buffer) {
+  return new Promise((resolve, reject) => {
+    const req = https.request({
+      hostname: WP_HOST,
+      path: '/wp-json/wp/v2/media',
+      method: 'POST',
+      headers: {
+        'Authorization': AUTH_HEADER,
+        'User-Agent': 'Nexilo-Publisher/1.0',
+        'Content-Type': mimeType,
+        'Content-Disposition': `attachment; filename="${filename}"`,
+        'Content-Length': buffer.length
+      }
+    }, res => {
+      let body = '';
+      res.on('data', c => body += c);
+      res.on('end', () => resolve({ status: res.statusCode, body }));
+    });
+    req.on('error', reject);
+    req.write(buffer);
+    req.end();
+  });
+}
+
+export async function uploadWpMedia(imagePath, title, altText) {
+  const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+  const resolved = path.isAbsolute(imagePath) ? imagePath : path.resolve(repoRoot, imagePath);
+  if (!fs.existsSync(resolved)) {
+    console.warn(`[NexiloLabs Media Warning] Image not found: ${resolved}`);
+    return null;
+  }
+
+  const filename = path.basename(resolved);
+  const slugBase = path.basename(filename, path.extname(filename)).toLowerCase();
+  const existingMediaId = await findExistingWpMedia(slugBase);
+  if (existingMediaId) {
+    console.log(`[NexiloLabs Media] Reusing existing media ID ${existingMediaId} for ${filename}`);
+    return existingMediaId;
+  }
+
+  const ext = path.extname(filename).toLowerCase();
+  const mimeType = ext === '.jpg' || ext === '.jpeg'
+    ? 'image/jpeg'
+    : ext === '.webp'
+      ? 'image/webp'
+      : 'image/png';
+
+  const buffer = fs.readFileSync(resolved);
+  const res = await wpUploadBinary(filename, mimeType, buffer);
+  const media = JSON.parse(res.body);
+  if (res.status < 200 || res.status >= 300 || !media?.id) {
+    console.warn(`[NexiloLabs Media Warning] Upload failed HTTP ${res.status}: ${media?.message || res.body}`);
+    return null;
+  }
+
+  try {
+    await wpRequest('POST', `/wp-json/wp/v2/media/${media.id}`, {
+      title: title || slugBase,
+      alt_text: altText || title || slugBase
+    });
+  } catch (e) {
+    console.warn(`[NexiloLabs Media Alt Warning] ${e.message}`);
+  }
+  console.log(`[NexiloLabs Media] Uploaded ${filename} -> ID ${media.id}`);
+  return media.id;
+}
+
+async function setRankMathFocusKeyword(postId, focusKeyword) {
+  if (!postId || !focusKeyword) return;
+  try {
+    const res = await wpRequest('POST', '/wp-json/rankmath/v1/updateMeta', {
+      objectType: 'post',
+      objectID: postId,
+      meta: {
+        rank_math_focus_keyword: focusKeyword
+      }
+    });
+    console.log(`[Rank Math Meta] Post ${postId} focusKeyword="${focusKeyword}" -> HTTP ${res.status}`);
+  } catch (e) {
+    console.warn(`[Rank Math Meta Warning] ${e.message}`);
+  }
+}
+
 export async function publishNexiloArticle(jsonFilePath) {
   const fullPath = path.resolve(jsonFilePath);
   if (!fs.existsSync(fullPath)) {
@@ -140,6 +239,10 @@ export async function publishNexiloArticle(jsonFilePath) {
   }
 
   const existingId = await findExistingWpPost(data.slug);
+  let featuredMediaId = data.featuredMediaId || null;
+  if (!featuredMediaId && data.imagePath) {
+    featuredMediaId = await uploadWpMedia(data.imagePath, data.title, data.excerpt || data.title);
+  }
 
   const wpCategories = (data.categorySlugs || []).map(s => categoryMap[s] || 24);
   if (wpCategories.length === 0) wpCategories.push(24);
@@ -147,21 +250,29 @@ export async function publishNexiloArticle(jsonFilePath) {
   const apiPath = existingId ? `/wp-json/wp/v2/posts/${existingId}` : '/wp-json/wp/v2/posts';
   console.log(`[NexiloLabs] ${existingId ? `Updating Post ID ${existingId}` : 'Creating New Post'} for slug: ${data.slug}`);
 
-  const res = await wpRequest('POST', apiPath, {
+  const postPayload = {
     title: data.title,
     slug: data.slug,
     content: htmlContent,
     excerpt: data.excerpt || '',
     status: 'publish',
     categories: wpCategories
-  });
+  };
+  if (featuredMediaId) {
+    postPayload.featured_media = featuredMediaId;
+  }
+
+  const res = await wpRequest('POST', apiPath, postPayload);
 
   const json = JSON.parse(res.body);
   if (res.status >= 200 && res.status < 300) {
     console.log(`[NexiloLabs] Successfully published: ${json.link}`);
+    if (data.focusKeyword) {
+      await setRankMathFocusKeyword(json.id, data.focusKeyword);
+    }
     await flushRankMathSitemapCache();
     await pingGoogleIndexing(json.link);
-    return { success: true, id: json.id, link: json.link, status: json.status };
+    return { success: true, id: json.id, link: json.link, status: json.status, featuredMediaId };
   }
   throw new Error(`WP API Error ${res.status}: ${json.message || res.body}`);
 }

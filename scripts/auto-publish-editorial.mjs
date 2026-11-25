@@ -11,6 +11,7 @@ if (process.env.DATABASE_URL) {
     path.join(process.cwd(), 'editorial')
   ];
 
+  const todayIst = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(new Date());
   const processedSlugs = new Set();
 
   for (const dir of candidateDirs) {
@@ -26,6 +27,10 @@ if (process.env.DATABASE_URL) {
       const filePath = path.join(dir, f);
       try {
         const data = JSON.parse(readFileSync(filePath, 'utf8'));
+        if (data.publishDate && data.publishDate > todayIst) {
+          console.log(`[ToolValueLab] Skipping ${f} (scheduled for ${data.publishDate} > ${todayIst}).`);
+          continue;
+        }
         if (data.slug && processedSlugs.has(data.slug)) continue;
         
         if (data.imageFile && data.imageFile.endsWith('.svg')) {
