@@ -17,7 +17,6 @@ async function runDailyMultiSitePublish() {
     if (existsSync(tvlSchedulePath)) {
       const schedule = JSON.parse(readFileSync(tvlSchedulePath, 'utf8'));
       console.log(`ToolValueLab Cycle: ${schedule.cycle}, Total days: ${schedule.total_cycle_days}`);
-      // Auto-publish pending articles via build script
       const res = spawnSync(process.execPath, [
         path.join(rootDir, 'scripts', 'auto-publish-editorial.mjs')
       ], { stdio: 'inherit', env: process.env });
@@ -37,6 +36,11 @@ async function runDailyMultiSitePublish() {
       for (const f of files) {
         const filePath = path.join(nexiloDir, f);
         try {
+          const data = JSON.parse(readFileSync(filePath, 'utf8'));
+          if (data.status === 'published_live' || (!data.html && !data.content)) {
+            console.log(`Skipping ${f} (already marked published_live or metadata-only).`);
+            continue;
+          }
           console.log(`Publishing NexiloLabs article: ${f}...`);
           const res = await publishNexiloArticle(filePath);
           console.log(`[NexiloLabs Success] Published ID ${res.id} -> ${res.link}`);

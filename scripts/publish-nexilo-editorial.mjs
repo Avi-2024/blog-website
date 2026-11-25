@@ -71,35 +71,60 @@ async function pingGoogleIndexing(url) {
   }
 }
 
-async function findExistingWpPost(slug) {
-  return new Promise((resolve) => {
+function wpRequest(method, reqPath, bodyObj = null) {
+  return new Promise((resolve, reject) => {
+    const payload = bodyObj ? JSON.stringify(bodyObj) : null;
+    const headers = {
+      'Authorization': AUTH_HEADER,
+      'User-Agent': 'Nexilo-Publisher/1.0'
+    };
+    if (payload) {
+      headers['Content-Type'] = 'application/json';
+      headers['Content-Length'] = Buffer.byteLength(payload);
+    }
+
     const req = https.request({
       hostname: WP_HOST,
-      path: `/wp-json/wp/v2/posts?slug=${encodeURIComponent(slug)}&status=any`,
-      method: 'GET',
-      headers: {
-        'Authorization': AUTH_HEADER,
-        'User-Agent': 'Nexilo-Publisher/1.0'
-      }
+      path: reqPath,
+      method,
+      headers
     }, res => {
       let body = '';
       res.on('data', c => body += c);
-      res.on('end', () => {
-        try {
-          const posts = JSON.parse(body);
-          if (Array.isArray(posts) && posts.length > 0) {
-            resolve(posts[0].id);
-          } else {
-            resolve(null);
-          }
-        } catch {
-          resolve(null);
-        }
-      });
+      res.on('end', () => resolve({ status: res.statusCode, body }));
     });
-    req.on('error', () => resolve(null));
+    req.on('error', reject);
+    if (payload) req.write(payload);
     req.end();
   });
+}
+
+export async function flushRankMathSitemapCache() {
+  try {
+    const res = await wpRequest('POST', '/wp-json/rankmath/v1/updateSettings', {
+      type: 'sitemap',
+      settings: { items_per_page: '200' },
+      fieldTypes: { items_per_page: 'text' },
+      updated: ['items_per_page'],
+      isReset: false
+    });
+    console.log(`[Rank Math Sitemap Cache] Flushed -> HTTP ${res.status}`);
+  } catch (e) {
+    console.warn('[Rank Math Sitemap Cache Warning]', e.message);
+  }
+}
+
+async function findExistingWpPost(slug) {
+  try {
+    const res = await wpRequest('GET', `/wp-json/wp/v2/posts?slug=${encodeURIComponent(slug)}&status=any`);
+    const posts = JSON.parse(res.body);
+    if (Array.isArray(posts) && posts.length > 0) {
+      return posts[0].id;
+    }
+  } catch {
+    // ignore
+  }
+  return null;
 }
 
 export async function publishNexiloArticle(jsonFilePath) {
@@ -109,57 +134,36 @@ export async function publishNexiloArticle(jsonFilePath) {
   }
 
   const data = JSON.parse(fs.readFileSync(fullPath, 'utf8'));
+  const htmlContent = data.html || data.content;
+  if (!htmlContent || !data.title || !data.slug) {
+    return { skipped: true, reason: 'Missing title, slug, or html content', slug: data.slug };
+  }
+
   const existingId = await findExistingWpPost(data.slug);
 
   const wpCategories = (data.categorySlugs || []).map(s => categoryMap[s] || 24);
   if (wpCategories.length === 0) wpCategories.push(24);
 
-  const payload = JSON.stringify({
+  const apiPath = existingId ? `/wp-json/wp/v2/posts/${existingId}` : '/wp-json/wp/v2/posts';
+  console.log(`[NexiloLabs] ${existingId ? `Updating Post ID ${existingId}` : 'Creating New Post'} for slug: ${data.slug}`);
+
+  const res = await wpRequest('POST', apiPath, {
     title: data.title,
     slug: data.slug,
-    content: data.html || data.content,
-    excerpt: data.excerpt,
+    content: htmlContent,
+    excerpt: data.excerpt || '',
     status: 'publish',
     categories: wpCategories
   });
 
-  const apiPath = existingId ? `/wp-json/wp/v2/posts/${existingId}` : '/wp-json/wp/v2/posts';
-  console.log(`[NexiloLabs] ${existingId ? `Updating Post ID ${existingId}` : 'Creating New Post'} for slug: ${data.slug}`);
-
-  return new Promise((resolve, reject) => {
-    const req = https.request({
-      hostname: WP_HOST,
-      path: apiPath,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': AUTH_HEADER,
-        'User-Agent': 'Nexilo-Publisher/1.0',
-        'Content-Length': Buffer.byteLength(payload)
-      }
-    }, res => {
-      let body = '';
-      res.on('data', c => body += c);
-      res.on('end', async () => {
-        try {
-          const json = JSON.parse(body);
-          if (res.statusCode >= 200 && res.statusCode < 300) {
-            console.log(`[NexiloLabs] Successfully published: ${json.link}`);
-            await pingGoogleIndexing(json.link);
-            resolve({ success: true, id: json.id, link: json.link, status: json.status });
-          } else {
-            reject(new Error(`WP API Error ${res.statusCode}: ${json.message || body}`));
-          }
-        } catch (e) {
-          reject(e);
-        }
-      });
-    });
-
-    req.on('error', reject);
-    req.write(payload);
-    req.end();
-  });
+  const json = JSON.parse(res.body);
+  if (res.status >= 200 && res.status < 300) {
+    console.log(`[NexiloLabs] Successfully published: ${json.link}`);
+    await flushRankMathSitemapCache();
+    await pingGoogleIndexing(json.link);
+    return { success: true, id: json.id, link: json.link, status: json.status };
+  }
+  throw new Error(`WP API Error ${res.status}: ${json.message || res.body}`);
 }
 
 if (process.argv[1]?.endsWith('publish-nexilo-editorial.mjs') && process.argv[2]) {
