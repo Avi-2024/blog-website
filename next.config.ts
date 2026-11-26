@@ -14,13 +14,6 @@ const config:NextConfig={
     ],
     dangerouslyAllowSVG:false,
   },
-  async redirects(){
-    return [
-      {source:'/',has:[{type:'query',key:'s',value:'(?<q>.+)'}],destination:'/search/?s=:q',permanent:false},
-      {source:'/',has:[{type:'query',key:'p',value:'(?<id>\\d+)'}],destination:'/api/wp-redirect/?p=:id',permanent:false},
-      {source:'/',has:[{type:'query',key:'page_id',value:'(?<id>\\d+)'}],destination:'/api/wp-redirect/?page_id=:id',permanent:false},
-    ];
-  },
   async headers(){
     return [
       {source:'/:path*',headers:[
