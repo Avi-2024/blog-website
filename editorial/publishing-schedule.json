@@ -11,7 +11,10 @@
       "date": "2026-11-24",
       "slug": "cursor-vs-github-copilot-2026",
       "title": "Cursor vs GitHub Copilot in 2026: Which AI Code Assistant Is Actually Worth Paying For?",
-      "categorySlugs": ["ai-tools", "software-reviews"],
+      "categorySlugs": [
+        "ai-tools",
+        "software-reviews"
+      ],
       "imageFile": "featured/cursor-vs-github-copilot-2026.svg",
       "status": "published_live"
     },
@@ -20,7 +23,10 @@
       "date": "2026-11-25",
       "slug": "deepseek-v3-r1-vs-chatgpt-business-2026",
       "title": "DeepSeek V3 & R1 vs ChatGPT: Can Open-Weight AI Replace OpenAI for Small Businesses in 2026?",
-      "categorySlugs": ["ai-tools", "business-software"],
+      "categorySlugs": [
+        "ai-tools",
+        "business-software"
+      ],
       "imageFile": "featured/deepseek-v3-r1-vs-chatgpt-business-2026.svg",
       "status": "published_live"
     },
@@ -29,16 +35,22 @@
       "date": "2026-11-26",
       "slug": "perplexity-pro-vs-chatgpt-plus-vs-claude-research-2026",
       "title": "Perplexity Pro vs ChatGPT Plus vs Claude Pro: Best AI Research Tool for Businesses (2026)",
-      "categorySlugs": ["software-reviews", "ai-tools"],
+      "categorySlugs": [
+        "software-reviews",
+        "ai-tools"
+      ],
       "imageFile": "featured/perplexity-pro-vs-chatgpt-plus-vs-claude-research-2026.svg",
-      "status": "queued"
+      "status": "published_live"
     },
     {
       "day": 4,
       "date": "2026-11-27",
       "slug": "n8n-vs-make-vs-zapier-automation-costs-2026",
       "title": "n8n vs Make vs Zapier in 2026: Real Cost & Privacy Comparison for AI Automation",
-      "categorySlugs": ["business-software", "software-reviews"],
+      "categorySlugs": [
+        "business-software",
+        "software-reviews"
+      ],
       "imageFile": "featured/n8n-vs-make-vs-zapier-automation-costs-2026.svg",
       "status": "queued"
     },
@@ -47,7 +59,10 @@
       "date": "2026-11-28",
       "slug": "lovable-vs-bolt-new-vs-v0-ai-app-builders-2026",
       "title": "Lovable vs Bolt.new vs v0: Which AI Full-Stack App Builder Is Ready for Production?",
-      "categorySlugs": ["ai-tools", "cloud-hosting"],
+      "categorySlugs": [
+        "ai-tools",
+        "cloud-hosting"
+      ],
       "imageFile": "featured/lovable-vs-bolt-new-vs-v0-ai-app-builders-2026.svg",
       "status": "queued"
     },
@@ -56,7 +71,10 @@
       "date": "2026-11-29",
       "slug": "supabase-vs-firebase-pricing-vector-comparison-2026",
       "title": "Supabase vs Firebase in 2026: Pricing, Postgres Vectors & Migration Traps",
-      "categorySlugs": ["cloud-hosting", "business-software"],
+      "categorySlugs": [
+        "cloud-hosting",
+        "business-software"
+      ],
       "imageFile": "featured/supabase-vs-firebase-pricing-vector-comparison-2026.svg",
       "status": "queued"
     },
@@ -65,7 +83,10 @@
       "date": "2026-11-30",
       "slug": "notion-ai-vs-microsoft-copilot-productivity-roi-2026",
       "title": "Notion AI vs Microsoft 365 Copilot: True SMB Productivity ROI in 2026",
-      "categorySlugs": ["business-software", "ai-tools"],
+      "categorySlugs": [
+        "business-software",
+        "ai-tools"
+      ],
       "imageFile": "featured/notion-ai-vs-microsoft-copilot-productivity-roi-2026.svg",
       "status": "queued"
     }
