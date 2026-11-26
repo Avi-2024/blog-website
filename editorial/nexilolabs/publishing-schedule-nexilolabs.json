@@ -11,7 +11,10 @@
       "date": "2026-11-24",
       "slug": "cursor-vs-github-copilot-2026",
       "title": "Cursor vs GitHub Copilot in 2026: Real-World Developer Benchmarks, INR Pricing, Latency & JetBrains Comparison",
-      "categorySlugs": ["ai-tools", "business-software"],
+      "categorySlugs": [
+        "ai-tools",
+        "business-software"
+      ],
       "status": "published_live",
       "wpPostId": 3985
     },
@@ -20,7 +23,10 @@
       "date": "2026-11-25",
       "slug": "deepseek-r1-local-setup-ollama-india-developers-2026",
       "title": "How to Run DeepSeek R1 Locally with Ollama in 2026: Hardware Specs, Hindi Reasoning & Cost Guide for Indian Developers",
-      "categorySlugs": ["ai-tools", "career-digital-skills"],
+      "categorySlugs": [
+        "ai-tools",
+        "career-digital-skills"
+      ],
       "status": "published_live",
       "wpPostId": 3989
     },
@@ -29,15 +35,22 @@
       "date": "2026-11-26",
       "slug": "google-gemini-2-flash-thinking-api-pricing-india-2026",
       "title": "Google Gemini 2.0 Flash & Thinking Mode: India API Access, Vertex AI Setup, Pricing & Real-World Use Cases",
-      "categorySlugs": ["ai-tools", "business-software"],
-      "status": "queued"
+      "categorySlugs": [
+        "ai-tools",
+        "business-software"
+      ],
+      "status": "published_live",
+      "wpPostId": 4011
     },
     {
       "day": 4,
       "date": "2026-11-27",
       "slug": "ai-voice-agents-elevenlabs-vs-bhashini-india-2026",
       "title": "AI Voice Agents in 2026: ElevenLabs Conversational AI vs India's Bhashini & Sarvam AI for Multilingual Support",
-      "categorySlugs": ["ai-tools", "smartphones-apps"],
+      "categorySlugs": [
+        "ai-tools",
+        "smartphones-apps"
+      ],
       "status": "queued"
     },
     {
@@ -45,7 +58,10 @@
       "date": "2026-11-28",
       "slug": "cert-in-ai-security-guidelines-enterprise-checklist-2026",
       "title": "CERT-In AI Security Guidelines (2026): What Indian Startups & IT Companies Must Implement to Avoid Penalties",
-      "categorySlugs": ["business-software", "career-digital-skills"],
+      "categorySlugs": [
+        "business-software",
+        "career-digital-skills"
+      ],
       "status": "queued"
     },
     {
@@ -53,7 +69,10 @@
       "date": "2026-11-29",
       "slug": "claude-3-7-sonnet-hybrid-reasoning-india-developer-guide",
       "title": "Claude 3.7 Sonnet Hybrid Reasoning: Setup, API Pricing in INR, Coding Benchmarks & Agentic Workflows",
-      "categorySlugs": ["ai-tools", "business-software"],
+      "categorySlugs": [
+        "ai-tools",
+        "business-software"
+      ],
       "status": "queued"
     },
     {
@@ -61,7 +80,10 @@
       "date": "2026-11-30",
       "slug": "top-10-free-ai-tools-for-indian-freelancers-students-2026",
       "title": "10 Free AI Tools Every Indian Freelancer & Engineering Student Should Use in 2026 (No Credit Card Required)",
-      "categorySlugs": ["career-digital-skills", "smartphones-apps"],
+      "categorySlugs": [
+        "career-digital-skills",
+        "smartphones-apps"
+      ],
       "status": "queued"
     }
   ]
