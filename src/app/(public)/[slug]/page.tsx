@@ -1,7 +1,9 @@
 import {LatestFeed} from '@/components/LatestFeed';
 
-import {cache} from 'react';import {notFound,permanentRedirect} from 'next/navigation';import type {Metadata} from 'next';import {getPage,getPostBySlug,assertPublic,resolveRedirect} from '@/lib/content';import {stripHtml} from '@/lib/editorial';import {postMetadata,pageMetadata} from '@/lib/seo';import {EditorialBody} from '@/components/EditorialBody';import {EditorialForm} from '@/components/Forms';import {ArticleView} from '@/components/ArticleView';
+import {cache} from 'react';import {notFound,permanentRedirect} from 'next/navigation';import type {Metadata} from 'next';import {getAllPosts,getPages,getPage,getPostBySlug,assertPublic,resolveRedirect} from '@/lib/content';import {stripHtml} from '@/lib/editorial';import {postMetadata,pageMetadata} from '@/lib/seo';import {EditorialBody} from '@/components/EditorialBody';import {EditorialForm} from '@/components/Forms';import {ArticleView} from '@/components/ArticleView';
 const resolve=cache(async(slug:string)=>{const [page,post]=await Promise.all([getPage(slug),getPostBySlug(slug)]);const item=page||post;if(!item)return null;if(!await assertPublic(item.id))return null;return {page,post};});
+export const revalidate=300;
+export async function generateStaticParams(){try{const [posts,pages]=await Promise.all([getAllPosts(),getPages()]);return [...posts,...pages].map(item=>({slug:item.slug}));}catch{return [];}}
 type Props={params:Promise<{slug:string}>};
 export async function generateMetadata({params}:Props):Promise<Metadata>{const {slug}=await params;const data=await resolve(slug);return data?.page?pageMetadata(data.page):data?.post?postMetadata(data.post):{title:'Not found',robots:{index:false}};}
 export default async function Content({params}:Props){const {slug}=await params;const data=await resolve(slug);if(!data){const path=await resolveRedirect(slug);if(path)permanentRedirect(path);notFound();}

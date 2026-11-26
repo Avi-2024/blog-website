@@ -4,6 +4,7 @@ import {ArticleCard} from '@/components/ArticleCard';
 import {Sidebar} from '@/components/Sidebar';
 import {Pagination} from '@/components/Pagination';
 import {SITE_URL} from '@/lib/site';
+export const revalidate=300;
 export async function generateMetadata({params}:{params:Promise<{segments:string[]}>}){const {segments}=await params;return {title:'Date archive',robots:{index:false,follow:true},alternates:{canonical:SITE_URL+'/'+segments.join('/')+'/'}};}
 export default async function DateArchive({params}:{params:Promise<{segments:string[]}>}){
  const {segments}=await params;const match=segments.join('/').match(/^(\d{4})\/(\d{2})(?:\/(\d{2}))?(?:\/page\/(\d+))?$/);if(!match)notFound();

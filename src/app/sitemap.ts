@@ -1,10 +1,9 @@
-import {connection} from 'next/server';
 import type { MetadataRoute } from 'next';
 import { getAllPosts,getPages,getCategories } from '@/lib/content';
 import { SITE_URL } from '@/lib/site';
 import { isIndexable } from '@/lib/seo';
+export const revalidate = 300;
 export default async function sitemap():Promise<MetadataRoute.Sitemap>{
- await connection();
  const [posts,pages,cats]=await Promise.all([getAllPosts(),getPages(),getCategories()]);
  return [
   {url:`${SITE_URL}/`,changeFrequency:'daily',priority:1},

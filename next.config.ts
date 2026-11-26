@@ -14,6 +14,13 @@ const config:NextConfig={
     ],
     dangerouslyAllowSVG:false,
   },
+  async redirects(){
+    return [
+      {source:'/',has:[{type:'query',key:'s',value:'(?<q>.+)'}],destination:'/search/?s=:q',permanent:false},
+      {source:'/',has:[{type:'query',key:'p',value:'(?<id>\\d+)'}],destination:'/api/wp-redirect/?p=:id',permanent:false},
+      {source:'/',has:[{type:'query',key:'page_id',value:'(?<id>\\d+)'}],destination:'/api/wp-redirect/?page_id=:id',permanent:false},
+    ];
+  },
   async headers(){
     return [
       {source:'/:path*',headers:[
@@ -23,6 +30,9 @@ const config:NextConfig={
         {key:'Permissions-Policy',value:'camera=(), microphone=(), geolocation=()'},
         ...(shouldBlockIndexing()?[{key:'X-Robots-Tag',value:'noindex, nofollow'}]:[]),
       ]},
+      ...['/sitemap.xml','/feed/'].map(source=>({source,headers:[
+        {key:'Cache-Control',value:'public, max-age=0, s-maxage=300, stale-while-revalidate=3600'},
+      ]})),
       ...['/admin/:path*','/preview/:path*','/api/:path*'].map(source=>({source,headers:[
         {key:'Cache-Control',value:'private, no-store, max-age=0'},
         {key:'Referrer-Policy',value:'no-referrer'},
