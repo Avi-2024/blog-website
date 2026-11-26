@@ -16,6 +16,24 @@ function runGit(rootDir, args) {
   return res.status === 0;
 }
 
+async function waitForLiveUrl(url, maxWaitMs = 120000) {
+  const deadline = Date.now() + maxWaitMs;
+  while (Date.now() < deadline) {
+    try {
+      const r = await fetch(url, { redirect: 'manual' });
+      if (r.status === 200) {
+        console.log(`[Deploy Check] Live HTTP 200 -> ${url}`);
+        return true;
+      }
+    } catch {
+      // retry until deadline
+    }
+    await new Promise(resolve => setTimeout(resolve, 10000));
+  }
+  console.warn(`[Deploy Check] Timed out waiting for HTTP 200 -> ${url}; submitting ping anyway.`);
+  return false;
+}
+
 async function runDailyMultiSitePublish() {
   const dryRun = process.argv.includes('--dry-run');
   const today = getTodayIst();
@@ -92,8 +110,11 @@ async function runDailyMultiSitePublish() {
         const pushed = runGit(rootDir, ['push', 'origin', 'main']);
         if (pushed) {
           for (const slug of promotedTvlSlugs) {
-            await pingGoogleIndexing(`https://toolvaluelab.com/${slug}/`);
+            const liveUrl = `https://toolvaluelab.com/${slug}/`;
+            await waitForLiveUrl(liveUrl, 120000);
+            await pingGoogleIndexing(liveUrl);
           }
+          await pingGoogleIndexing('https://toolvaluelab.com/');
         }
       }
     }
